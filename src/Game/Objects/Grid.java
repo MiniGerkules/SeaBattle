@@ -5,7 +5,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.*;
 
-public class GameObjectsContainer extends GameObject {
+public class Grid extends GameObject {
     private final List<GameObject> allObjects;
     private final List<Shape> containerParts;
     private final Color boundsColor;
@@ -26,7 +26,7 @@ public class GameObjectsContainer extends GameObject {
         return boundsColor;
     }
 
-    public GameObjectsContainer(int xCoordinate, int yCoordinate, int sizeX, int sizeY, Color color) {
+    public Grid(int xCoordinate, int yCoordinate, int sizeX, int sizeY, Color color) {
         super(xCoordinate, yCoordinate, sizeX, sizeY, color);
         boundsColor = new Color(color.getRGB() + 5);
 
