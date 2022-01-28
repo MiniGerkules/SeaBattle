@@ -1,29 +1,25 @@
 package Game;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
 import javax.swing.*;
-
-import Game.Objects.GameObject;
-import Game.Objects.GameField;
 
 /**
  * The main class of the game. Determines the main window and its rendering
  */
 public class Game {
-    private final JFrame game = new JFrame(); // Основной экран приложения
-    private final Container mainContainer = game.getContentPane(); // Главный контейнер приложения
-    private final JPanel gameFields = new JPanel(); // Контейнер, в который будем складывать поля игроков
+    public static final Color filedColor = Color.white;
+    public static final Color hitColor = Color.RED;
+    public static final Color missColor = Color.GRAY;
+    public static final Color shipColor = Color.MAGENTA;
 
-    private final List<GameObject> allGameObjects = new ArrayList<>();
-    private final GameField player1Field;
-    private final GameField player2Field;
+    private final JFrame game = new JFrame();
+    private final Container mainContainer = game.getContentPane();
 
-    private Player player1;
-    private Player player2;
+    private final Player player1 = new Player();
+    private final Player player2 = new Player();
 
     public final int appSizeX, appSizeY;
+    private final Font font = new Font("TimesRoman", Font.BOLD, 30);
 
     /**
      * Constructor of the Game class. Initializes the main frame of the game.
@@ -40,37 +36,127 @@ public class Game {
         game.setResizable(false); // Задаем возможность изменения размера
         game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Задаем способ закрытия приложения
 
-        mainContainer.setLayout(new BorderLayout()); // Выбираем контейнер
+        mainContainer.setLayout(new GridBagLayout()); // Выбираем контейнер
         mainContainer.setPreferredSize(new Dimension(appSizeX, appSizeY)); // Выставляем размеры без учета заголовка
-        mainContainer.add(gameFields, BorderLayout.CENTER);
-        gameFields.setLayout(new GridLayout(1, 2));
         game.pack(); // Заставляем размеры быть применеными
-
-        int bias = 10;
-        int gridSizeX = appSizeX/2 - bias*2;
-        int gridSizeY = appSizeY - bias*2;
-        player1Field = new GameField(10, bias, bias, gridSizeX, gridSizeY, new Color(64,224,208));
-        player2Field = new GameField(10, bias, bias, gridSizeX, gridSizeY, new Color(250, 128, 114));
-
-        drawPreStartMenu();
     }
 
     /**
      * The method renders the prelaunch menu
      */
-    private void drawPreStartMenu() {
+    public void drawPreStartMenu() {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+
+        JLabel label = new JLabel("МОРСКОЙ БОЙ!");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setFont(font);
+        mainContainer.add(label, constraints);
+
+        JButton button = new JButton("Начать игру");
+        button.setFont(font);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        mainContainer.add(button, constraints);
+
         game.setVisible(true);
+
+        button.addActionListener(listener -> {
+            mainContainer.removeAll();
+            mainContainer.repaint();
+            startGame();
+        });
     }
 
     /**
      * The method starts the game if all right
      */
-    public void startGame() {
-        gameFields.add(player1Field);
-        gameFields.add(player2Field);
+    private void startGame() {
+        initGame();
+        mainContainer.revalidate();
+        Player currentMover = player1;
 
-//        gameFields.remove(player1Field);
-//        gameFields.remove(player2Field);
-//        gameFields.repaint();
+        currentMover.setEnableMyField(false);
+        while (player1.canPlay() && player2.canPlay()) {
+            currentMover.makeMove();
+
+            if (!currentMover.isCanShootAgain()) {
+                currentMover.setEnableMyField(true);
+                currentMover = changeCurrentMover(currentMover);
+                currentMover.setEnableMyField(false);
+            }
+        }
+
+        if (player1.canPlay())
+            JOptionPane.showMessageDialog(game, "Вы победили!");
+        else
+            JOptionPane.showMessageDialog(game, "Вы проиграли!");
+
+        mainContainer.removeAll();
+        player1.removeAll();
+        player2.removeAll();
+
+        int result = JOptionPane.showConfirmDialog(game, "Хотите еще раз сыграть?", "Морской бой",
+                JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION)
+            drawPreStartMenu();
+    }
+
+    private Player changeCurrentMover(Player currentMover) {
+        return currentMover == player1 ? player2 : player1;
+    }
+
+    private void initGame() {
+        JLabel label = new JLabel("Ваша область синяя, вражеская -- красная");
+        JPanel shipsPlace = new JPanel();
+        JPanel fieldPl1 = new JPanel();
+        JPanel fieldPl2 = new JPanel();
+        addInMainContainerWithConstrains(label, shipsPlace, fieldPl2, fieldPl2);
+
+        player1.setField(fieldPl1);
+        player1.prepareGameField();
+        player1.arrangeShips(shipsPlace);
+
+        player2.setField(fieldPl2);
+        player2.prepareGameField();
+        player2.arrangeShipsAutomatically();
+    }
+
+    private void addInMainContainerWithConstrains(JLabel label, JPanel panel1, JPanel panel2, JPanel panel3) {
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setFont(font);
+        setConstrains(constraints, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 1,
+                1, 0, 0, GridBagConstraints.REMAINDER);
+        mainContainer.add(label, constraints);
+
+        panel1.setBackground(Color.YELLOW);
+        setConstrains(constraints, GridBagConstraints.BOTH, new Insets(5, 10, 10, 5), 1,
+                10, 0, 1, 1);
+        mainContainer.add(panel1, constraints);
+
+        panel2.setBackground(Color.ORANGE);
+        setConstrains(constraints, GridBagConstraints.BOTH, new Insets(5, 5, 10, 5), 2,
+                10, 1, 1, 2);
+        mainContainer.add(panel2, constraints);
+
+        panel3.setBackground(Color.RED);
+        setConstrains(constraints, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 2,
+                10, 3, 1, 2);
+        mainContainer.add(panel3, constraints);
+    }
+
+    private void setConstrains(GridBagConstraints constraints, int fill, Insets insets, double weightx,
+                               double weighty, int gridx, int gridy, int gridwidth) {
+        constraints.fill = fill;
+        constraints.insets = insets;
+        constraints.weightx = weightx;
+        constraints.weighty = weighty;
+        constraints.gridx = gridx;
+        constraints.gridy = gridy;
+        constraints.gridwidth = gridwidth;
+        constraints.gridheight = 1;
     }
 }
