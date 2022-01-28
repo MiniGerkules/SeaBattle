@@ -1,10 +1,11 @@
-package Game.Objects;
+package Game.Objects.Ships;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import Game.Game;
 import Game.Helpers.Shoots;
+import Game.Objects.FieldPart;
 
 public abstract class Ship {
     protected List<FieldPart> shipParts;

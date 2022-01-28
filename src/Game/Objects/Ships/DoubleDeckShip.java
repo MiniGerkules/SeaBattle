@@ -1,6 +1,7 @@
-package Game.Objects;
+package Game.Objects.Ships;
 
 import java.util.List;
+import Game.Objects.FieldPart;
 
 public class DoubleDeckShip extends Ship {
     public DoubleDeckShip(List<FieldPart> shipParts) {
