@@ -3,6 +3,7 @@ package Game.Objects;
 import Game.Game;
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class FieldPart extends JButton {
     private final int indexX;
@@ -44,6 +45,6 @@ public class FieldPart extends JButton {
 
     @Override
     public int hashCode() {
-        return indexX*indexY + 5*indexX - 7*indexY;
+        return Objects.hash(indexX, indexY);
     }
 }
