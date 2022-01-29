@@ -1,8 +1,6 @@
 package Game.Helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Helpers {
     private Helpers() {}
@@ -19,27 +17,35 @@ public class Helpers {
 
     public static Bounds getBounds(Directions directions, int shipSize) {
         switch (directions) {
-            case LEFT -> { return new Bounds(4, 0, 9, 9); }
-            case TOP -> { return new Bounds(0, 4, 9, 9); }
-            case RIGHT -> { return new Bounds(0, 0, 6, 9); }
-            default -> { return new Bounds(0, 0, 9, 6); } // Bottom
+            case LEFT -> { return new Bounds(shipSize, 0, 9, 9); }
+            case TOP -> { return new Bounds(0, shipSize, 9, 9); }
+            case RIGHT -> { return new Bounds(0, 0, 10 - shipSize, 9); }
+            default -> { return new Bounds(0, 0, 9, 10 - shipSize); } // Bottom
         }
     }
 
-    public static List<Index> getIndices(Directions directions, int size, int startX, int startY) {
+    public static List<Index> getIndices(Directions direction, int size, int startX, int startY) {
         List<Index> indices = new ArrayList<>(size);
+        Map.Entry<Integer, Integer> additions = getAddition(direction);
+        int additionX = additions.getKey();
+        int additionY = additions.getValue();
+
+        for (int i = 0; i < size; ++i)
+            indices.add(new Index(startY + additionY*i, startX + additionX*i));
+
+        return indices;
+    }
+
+    public static Map.Entry<Integer, Integer> getAddition(Directions direction) {
         int additionX = 0, additionY = 0;
 
-        switch (directions) {
+        switch (direction) {
             case LEFT -> additionX = -1;
             case RIGHT -> additionX = 1;
             case TOP -> additionY = -1;
             case BOTTOM -> additionY = 1;
         }
 
-        for (int i = 0; i < size; ++i)
-            indices.add(new Index(startY + additionY*i, startX + additionX*i));
-
-        return indices;
+        return new AbstractMap.SimpleEntry<>(additionX, additionY);
     }
 }
