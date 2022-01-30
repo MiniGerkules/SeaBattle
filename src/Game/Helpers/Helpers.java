@@ -15,10 +15,10 @@ public class Helpers {
         }
     }
 
-    public static Bounds getBounds(Directions directions, int shipSize) {
-        switch (directions) {
-            case LEFT -> { return new Bounds(shipSize, 0, 9, 9); }
-            case TOP -> { return new Bounds(0, shipSize, 9, 9); }
+    public static Bounds getBounds(Directions direction, int shipSize) {
+        switch (direction) {
+            case LEFT -> { return new Bounds(shipSize - 1, 0, 9, 9); }
+            case TOP -> { return new Bounds(0, shipSize - 1, 9, 9); }
             case RIGHT -> { return new Bounds(0, 0, 10 - shipSize, 9); }
             default -> { return new Bounds(0, 0, 9, 10 - shipSize); } // Bottom
         }
