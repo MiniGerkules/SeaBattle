@@ -43,8 +43,8 @@ public class ShipCreator {
             Directions direction = Helpers.generateDirections();
             Bounds bounds = Helpers.getBounds(direction, shipSize);
 
-            int x = rand.nextInt(bounds.getRight()) + bounds.getLeft();
-            int y = rand.nextInt(bounds.getBottom()) + bounds.getTop();
+            int x = rand.nextInt(bounds.getRight() - bounds.getLeft() + 1) + bounds.getLeft();
+            int y = rand.nextInt(bounds.getBottom() - bounds.getTop() + 1) + bounds.getTop();
 
             if (isFree(direction, shipSize, x, y))
                 return Helpers.getIndices(direction, shipSize, x, y);
