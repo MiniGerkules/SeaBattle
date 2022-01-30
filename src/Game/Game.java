@@ -65,7 +65,10 @@ public class Game {
         button.addActionListener(listener -> {
             mainContainer.removeAll();
             mainContainer.repaint();
-            startGame();
+
+            initGame();
+            mainContainer.revalidate();
+            //startGame();
         });
     }
 
@@ -73,8 +76,6 @@ public class Game {
      * The method starts the game if all right
      */
     private void startGame() {
-        initGame();
-        mainContainer.revalidate();
         Player currentMover = player1;
 
         currentMover.setEnableMyField(false);
@@ -100,7 +101,7 @@ public class Game {
         int result = JOptionPane.showConfirmDialog(game, "Хотите еще раз сыграть?", "Морской бой",
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION)
-            drawPreStartMenu();
+            startGame();
     }
 
     private Player changeCurrentMover(Player currentMover) {
@@ -112,11 +113,11 @@ public class Game {
         JPanel shipsPlace = new JPanel();
         JPanel fieldPl1 = new JPanel();
         JPanel fieldPl2 = new JPanel();
-        addInMainContainerWithConstrains(label, shipsPlace, fieldPl2, fieldPl2);
+        addInMainContainerWithConstrains(label, shipsPlace, fieldPl1, fieldPl2);
 
         player1.setField(fieldPl1);
         player1.prepareGameField();
-        player1.arrangeShips(shipsPlace);
+        player1.arrangeShipsAutomatically();
 
         player2.setField(fieldPl2);
         player2.prepareGameField();
