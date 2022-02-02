@@ -77,8 +77,7 @@ public class Player {
                 }
                 case Destroy -> {
                     enemyWasHit(part, "Корабль уничтожен! Вы можете походить еще раз!");
-                    ships.remove(ship);
-                    ship.shipWasDestroyed();
+                    enemyWasDestroyed(ship);
                     return;
                 }
             }
@@ -97,6 +96,13 @@ public class Player {
 
         enemyCanShootAgain = true;
         canContinueGame.countDown();
+    }
+
+    private void enemyWasDestroyed(Ship ship) {
+        ships.remove(ship);
+        ship.shipWasDestroyed();
+        for (FieldPart part : ship.getFieldsNearby())
+            fieldParts.get(part.getRow()).remove(part);
     }
 
     public void arrangeShips(JPanel ships) {
