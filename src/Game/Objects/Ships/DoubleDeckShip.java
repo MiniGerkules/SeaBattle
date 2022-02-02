@@ -4,7 +4,7 @@ import java.util.List;
 import Game.Objects.FieldPart;
 
 public class DoubleDeckShip extends Ship {
-    public DoubleDeckShip(List<FieldPart> shipParts) {
-        super(shipParts, 2);
+    public DoubleDeckShip(List<FieldPart> shipParts, List<FieldPart> fieldsNearby) {
+        super(shipParts, fieldsNearby, 2);
     }
 }
