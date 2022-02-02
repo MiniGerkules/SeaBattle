@@ -66,6 +66,7 @@ public class Player {
 
     public void shootAtMe(ActionEvent event) {
         FieldPart part = (FieldPart) event.getSource();
+        fieldParts.get(part.getRow()).remove(part);
 
         for (Ship ship : ships) {
             switch (ship.isShipWasHit(part)) {
