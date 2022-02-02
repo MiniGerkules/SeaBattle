@@ -21,7 +21,7 @@ public class FieldPart extends JButton {
         this.indexX = indexX;
         this.indexY = indexY;
 
-        setBackground(Game.filedColor);
+        setBackground(Game.waterColor);
         addActionListener(listener);
     }
 
