@@ -26,10 +26,12 @@ public class FieldPart extends JButton {
 
     public void itWasShipPart () {
         setBackground(Game.hitColor);
+        setEnabled(false);
     }
 
     public void itWasWater() {
         setBackground(Game.missColor);
+        setEnabled(false);
     }
 
     @Override
