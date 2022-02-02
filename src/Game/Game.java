@@ -1,5 +1,7 @@
 package Game;
 
+import Game.Objects.Winner;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -7,7 +9,7 @@ import javax.swing.*;
  * The main class of the game. Determines the main window and its rendering
  */
 public class Game {
-    public static final Color filedColor = Color.white;
+    public static final Color waterColor = Color.white;
     public static final Color hitColor = Color.RED;
     public static final Color missColor = Color.GRAY;
     public static final Color shipColor = Color.MAGENTA;
@@ -17,6 +19,9 @@ public class Game {
 
     private final Player player1 = new Player();
     private final Player player2 = new Player();
+
+    private final Timer timer;
+    private final MainGameLoop gameLogic = new MainGameLoop(player1, player2);
 
     public final int appSizeX, appSizeY;
     private final Font font = new Font("TimesRoman", Font.BOLD, 30);
@@ -39,6 +44,17 @@ public class Game {
         mainContainer.setLayout(new GridBagLayout()); // Выбираем контейнер
         mainContainer.setPreferredSize(new Dimension(appSizeX, appSizeY)); // Выставляем размеры без учета заголовка
         game.pack(); // Заставляем размеры быть применеными
+
+        timer = new Timer(500, event2 -> {
+            if (gameLogic.getWhoWin() != Winner.NONE) {
+                if (gameLogic.getWhoWin() == Winner.PLAYER1)
+                    JOptionPane.showMessageDialog(game, "Вы победили!");
+                else
+                    JOptionPane.showMessageDialog(game, "Вы проиграли!");
+
+                endGame();
+            }
+        });
     }
 
     /**
@@ -62,37 +78,24 @@ public class Game {
 
         game.setVisible(true);
 
-        button.addActionListener(listener -> {
+        button.addActionListener(event1 -> {
             mainContainer.removeAll();
             mainContainer.repaint();
 
-            initGame();
-            mainContainer.revalidate();
-            //startGame();
+            startGame();
         });
     }
 
-    /**
-     * The method starts the game if all right
-     */
     private void startGame() {
-        Player currentMover = player1;
+        initGame();
+        mainContainer.revalidate();
 
-        currentMover.setEnableMyField(false);
-        while (player1.canPlay() && player2.canPlay()) {
-            currentMover.makeMove();
+        gameLogic.start();
+        timer.start();
+    }
 
-            if (!currentMover.isCanShootAgain()) {
-                currentMover.setEnableMyField(true);
-                currentMover = changeCurrentMover(currentMover);
-                currentMover.setEnableMyField(false);
-            }
-        }
-
-        if (player1.canPlay())
-            JOptionPane.showMessageDialog(game, "Вы победили!");
-        else
-            JOptionPane.showMessageDialog(game, "Вы проиграли!");
+    private void endGame() {
+        timer.stop();
 
         mainContainer.removeAll();
         player1.removeAll();
@@ -102,10 +105,6 @@ public class Game {
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION)
             startGame();
-    }
-
-    private Player changeCurrentMover(Player currentMover) {
-        return currentMover == player1 ? player2 : player1;
     }
 
     private void initGame() {
@@ -138,12 +137,10 @@ public class Game {
                 10, 0, 1, 1);
         mainContainer.add(panel1, constraints);
 
-        panel2.setBackground(Color.ORANGE);
         setConstrains(constraints, GridBagConstraints.BOTH, new Insets(5, 5, 10, 5), 2,
                 10, 1, 1, 2);
         mainContainer.add(panel2, constraints);
 
-        panel3.setBackground(Color.RED);
         setConstrains(constraints, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 2,
                 10, 3, 1, 2);
         mainContainer.add(panel3, constraints);
